@@ -7,8 +7,14 @@ class wordService {
         const self = this;
         const words = this.apiService.getWords(function processWordList(words) {
             const random = Math.floor(Math.random() * words.length);
-            const word = self._jumble(words[random]);
-            callback(word);
+            const word = words[random];
+            const wordDetails = {
+                original: word,
+                jumbled: self._jumble(word),
+                score: self._getScore(word)
+            };
+            
+            callback(wordDetails);
         });
     }
 
@@ -21,6 +27,15 @@ class wordService {
             [chars[i], chars[random]] = [chars[random], chars[i]];
         }
         return chars.join('');
+    }
+
+    _getScore(word) {
+        const scoring_constant = 1.95;
+        const scoring_power_divisor = 3;
+
+        const exponent = word.length / scoring_power_divisor;
+        const score = Math.floor(Math.pow(scoring_constant, exponent));
+        return score;
     }
 
 }

@@ -1,0 +1,14 @@
+{
+  "name": "jumble",
+  "version": "1.0.0",
+  "description": "A word game in Angularjs",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "author": "Ciarán Phillips",
+  "license": "ISC",
+  "devDependencies": {
+    "angular": "^1.6.3"
+  }
+}

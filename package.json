@@ -4,11 +4,16 @@
   "description": "A word game in Angularjs",
   "main": "index.js",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "serve": "./node_modules/.bin/webpack-dev-server --colors --progress --host=0.0.0.0"
   },
   "author": "Ciarán Phillips",
   "license": "ISC",
   "devDependencies": {
-    "angular": "^1.6.3"
+    "angular": "^1.6.3",
+    "babel-core": "^6.24.0",
+    "babel-loader": "^6.4.1",
+    "babel-preset-env": "^1.2.2",
+    "webpack": "^2.3.1"
   }
 }

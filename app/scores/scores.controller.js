@@ -1,5 +1,5 @@
 class ScoresController {
-    
+
     constructor(gameEngineService, apiService) {
         this._gameEngineService = gameEngineService;
         this._apiService = apiService;
@@ -10,25 +10,13 @@ class ScoresController {
         this.scoresLoaded = false;
         this.position = true;
         this.list = [];
-        this.loadHighScores();
-    }
-
-    loadHighScores(callback) {
-        const self = this;
-        self._apiService.getScores(function retrievedHighScores(scores) {
-            self.scoresLoaded = true;
-            self.list = scores;
-
-            if (typeof callback !== 'undefined') {
-                callback(scores);
-            }
-        });
+        this._loadHighScores();
     }
 
     submitScore() {
         const scoreId = this._apiService.addScore(this.userName, this.currentGame.score);
         this.scoreEntered = true;
-        this.loadHighScores((scoreList) => {
+        this._loadHighScores((scoreList) => {
             this.position = this._getPosition(scoreId, scoreList);
         });
     }
@@ -39,6 +27,18 @@ class ScoresController {
 
     notEntered() {
         return !this.entered();
+    }
+
+    _loadHighScores(callback) {
+        const self = this;
+        self._apiService.getScores(function retrievedHighScores(scores) {
+            self.scoresLoaded = true;
+            self.list = scores;
+
+            if (typeof callback !== 'undefined') {
+                callback(scores);
+            }
+        });
     }
 
     _getPosition(scoreId, scoreList) {

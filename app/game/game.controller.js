@@ -9,37 +9,37 @@ const TIME_LIMIT = 40;
 class GameController {
     constructor($timeout, wordService, gameEngineService) {
         const self = this;
-        self.wordService = wordService;
-        self.$timeout = $timeout;
-        self.gameEngineService = gameEngineService;
+        self._wordService = wordService;
+        self._$timeout = $timeout;
+        self._gameEngineService = gameEngineService;
 
-        self.state = STATE_NOT_STARTED;
+        self._state = STATE_NOT_STARTED;
 
         self.startGame = function startGame() {
-            self.state = STATE_INITIALIZING;
+            self._state = STATE_INITIALIZING;
             wordService.get((wordDetails) => {
-                self.currentGame = self.gameEngineService.newGame(wordDetails);
-                self.state = STATE_PLAYING;
+                self.currentGame = self._gameEngineService.newGame(wordDetails);
+                self._state = STATE_PLAYING;
                 self.timeLeft = TIME_LIMIT;
                 self.startTimer();
             });
         }
 
         self.evaluate = function(userInput) {
-            self.gameEngineService.updateGameScore(self.currentGame);
-            if (self.gameEngineService.isCorrect(self.currentGame)) {
+            self._gameEngineService.updateGameScore(self.currentGame);
+            if (self._gameEngineService.isCorrect(self.currentGame)) {
                 self.updateGame();
             }
         }
 
-        self.stateNotStarted = () => self.state === STATE_NOT_STARTED;
-        self.statePlaying = () => self.state === STATE_PLAYING;
-        self.stateFinished = () => self.state === STATE_FINISHED;
+        self.stateNotStarted = () => self._state === STATE_NOT_STARTED;
+        self.statePlaying = () => self._state === STATE_PLAYING;
+        self.stateFinished = () => self._state === STATE_FINISHED;
     }
 
     updateGame() {
-        this.wordService.get((wordDetails) => {
-            this.gameEngineService.setNewWord(this.currentGame, wordDetails);
+        this._wordService.get((wordDetails) => {
+            this._gameEngineService.setNewWord(this.currentGame, wordDetails);
         });
     }
 
@@ -49,13 +49,13 @@ class GameController {
         function tick() {
             self.timeLeft--;
             if (self.timeLeft === 0) {
-                self.state = STATE_FINISHED;
+                self._state = STATE_FINISHED;
             }
             else {
-                self.$timeout(tick, interval);
+                self._$timeout(tick, interval);
             }
         }
-        self.$timeout(tick, interval);
+        self._$timeout(tick, interval);
     }   
 }
 

@@ -1,38 +1,34 @@
 class apiService {
     constructor(firebaseService, $timeout) {
-        this.$timeout = $timeout;
-        this.rootReference = firebaseService.database().ref();
-        this.database = null;
+        this._$timeout = $timeout;
+        this._rootReference = firebaseService.database().ref();
+        this._database = null;
 
         // If data is requested before we have it back from the API, 
         // we queue the requests here
-        this.queuedActions = [];
+        this._queuedActions = [];
 
-        this.rootReference.on('value', (snapshot) => {
-            this.database = snapshot.val();
-            this.processQueuedActions();
+        this._rootReference.on('value', (snapshot) => {
+            this._database = snapshot.val();
+            this._processQueuedActions();
         });
     }
 
-    getFullDatabase() {
-        return this.database;
-    }
-
     getWords(callback) {
-        if (this.database !== null) {
-            const words = Object.keys(this.database.words);
-            this.$timeout(() => callback(words));
+        if (this._database !== null) {
+            const words = Object.keys(this._database.words);
+            this._$timeout(() => callback(words));
         }
         else {
-            this.queueAction(this.getWords, callback);
+            this._queueAction(this.getWords, callback);
         }
     }
 
     getScores(callback) {
-        if (this.database !== null) {
+        if (this._database !== null) {
             let scores = [];
-            for (let key in this.database.scores) {
-                let scoreObj = this.database.scores[key];
+            for (let key in this._database.scores) {
+                let scoreObj = this._database.scores[key];
                 scores.push({
                     id: key,
                     score: scoreObj.score,
@@ -43,15 +39,15 @@ class apiService {
                 return b.score - a.score;
             });
             
-            this.$timeout(() => callback(scores));
+            this._$timeout(() => callback(scores));
         }
         else {
-            this.queueAction(this.getScores, callback); 
+            this._queueAction(this.getScores, callback); 
         }
     }
 
     addScore(name, score) {
-        const scoreId = this.rootReference.child('scores').push().key;
+        const scoreId = this._rootReference.child('scores').push().key;
         const scoreReference = "/scores/" + scoreId;
 
         const scoreUpdate = {
@@ -60,19 +56,19 @@ class apiService {
                 score
             }
         }
-        this.rootReference.update(scoreUpdate);
+        this._rootReference.update(scoreUpdate);
         return scoreId;
     }
 
-    processQueuedActions() {
-        this.queuedActions.forEach((action) => {
+    _processQueuedActions() {
+        this._queuedActions.forEach((action) => {
             action.apiCall.call(this, action.callback);
         });
-        this.queuedActions = [];
+        this._queuedActions = [];
     }
 
-    queueAction(apiCall, callback) {
-        this.queuedActions.push({
+    _queueAction(apiCall, callback) {
+        this._queuedActions.push({
             apiCall,
             callback
         });

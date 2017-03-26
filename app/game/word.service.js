@@ -1,12 +1,12 @@
 class wordService {
-    
+
     constructor(apiService) {
-        this.apiService = apiService;
+        this._apiService = apiService;
     }
 
     get(callback) {
         const self = this;
-        const words = this.apiService.getWords(function processWordList(words) {
+        const words = this._apiService.getWords(function processWordList(words) {
             const random = Math.floor(Math.random() * words.length);
             const word = words[random];
             const wordDetails = {

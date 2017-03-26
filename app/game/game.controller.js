@@ -1,10 +1,8 @@
-module.exports = ['$scope', 'apiService', GameController];
+module.exports = ['$scope', 'wordService', GameController];
 
-function GameController($scope, apiService) {
-    $scope.data = [];
-    apiService.getWords((words) => {
-        $scope.data = words;
+function GameController($scope, wordService) {
+    $scope.currentWord = "";
+    wordService.get((jumbledWord) => {
+        $scope.currentWord = jumbledWord;
     });
-    console.log($scope.data);
-    
 }

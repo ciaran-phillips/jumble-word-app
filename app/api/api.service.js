@@ -23,6 +23,13 @@ class apiService {
         });
     }
 
+    /**
+     * Get array of words from the API 
+     * 
+     * @param {function} callback
+     *      callback that accepts an array of strings
+     *      as the first argument, i.e. callback(string[])
+     */
     getWords(callback) {
         if (this._database !== null) {
             const words = Object.keys(this._database.words);
@@ -33,6 +40,15 @@ class apiService {
         }
     }
 
+    /**
+     * Get array of high scores from the API
+     * 
+     * @param {function} callback
+     *      callback accepting an array of
+     *      score objects, i.e. callback(score[])
+     *      where a score object takes the form:
+     *      {id: string, score: number, name: string}
+     */
     getScores(callback) {
         if (this._database !== null) {
             let scores = [];
@@ -58,6 +74,17 @@ class apiService {
         }
     }
 
+    /**
+     * Add a score to the database
+     * 
+     * @param {string} name
+     *      User name to be associated with the score
+     * @param {number} score
+     *      Score that the user achieved
+     * 
+     * @return {string}
+     *      ID given to this score record in the DB
+     */
     addScore(name, score) {
         const scoreId = this._rootReference.child('scores').push().key;
         const scoreReference = "/scores/" + scoreId;
@@ -72,6 +99,9 @@ class apiService {
         return scoreId;
     }
 
+    /**
+     * Calls any queued API calls, and clears the queue
+     */
     _processQueuedActions() {
         this._queuedActions.forEach((action) => {
             action.apiCall.call(this, action.callback);
@@ -79,6 +109,14 @@ class apiService {
         this._queuedActions = [];
     }
 
+    /**
+     * Queues an API call to be invoked later
+     * 
+     * @param {function} apiCall
+     *      API call to be invoked
+     * @param {function} callback
+     *      callback to be invoked when the API call is completed
+     */
     _queueAction(apiCall, callback) {
         this._queuedActions.push({
             apiCall,

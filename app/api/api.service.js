@@ -51,6 +51,7 @@ apiService.prototype.processQueuedActions = function() {
     this.queuedActions.forEach((action) => {
         action.apiCall.call(this, action.callback);
     });
+    this.queuedActions = [];
 }
 
 apiService.prototype.queueAction = function(apiCall, callback) {

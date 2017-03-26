@@ -5,7 +5,7 @@ const STATE_INITIALIZING = 'intializing';
 const STATE_PLAYING = 'playing';
 const STATE_FINISHED = 'finished';
 
-const TIME_LIMIT = 40;
+const TIME_LIMIT = 10;
 
 
 function GameController($timeout, wordService, gameEngineService) {

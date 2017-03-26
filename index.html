@@ -7,68 +7,98 @@
         <script src="bundle.js"></script>
         <link href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css" rel="stylesheet" 
             integrity="sha384-BVYiiSIFeK1dGmJRAkycuHAHRg32OmUcww7on3RYdg4Va+PmSTsz/K68vbdEjh4u" crossorigin="anonymous">
+        <link href="/assets/style/style.css" rel="stylesheet">
     </head>
 
     <body ng-controller="GameController as game">
         <div class="container">
-            <h1>
-                Jumble Word Game
-            </h1>
+            <div class="title">
+                <h1 class="title__main">
+                    Jumble
+                </h1>
+                <hr class="title__separator">
+                <h2 class="title__sub">
+                    A mixed-up letters game
+                </h2>
+            </div>
+            
             <div ng-if="game.stateNotStarted()">
                     
-                <button class="btn btn-primary" ng-click="game.startGame()">Start</button>
+                <button class="btn btn-primary btn-start" ng-click="game.startGame()">start game</button>
             </div>
-
-            <div ng-if="game.statePlaying()">
-                <div class="col-sm-4">
-                    <h4>Current Score:</h4>
-                    {{game.currentGame.score}}
-                </div>
-                <div class="col-sm-4">
-                    <h4>Word:</h4>
-                    {{game.currentGame.word.jumbled}}
-                </div>
-                <div class="col-sm-4">
-                    <h4>Time left:</h4>
-                    {{game.timeLeft}}
-
-                </div>
-                <div class="form-group">
-                    <input ng-change="game.evaluate()" ng-model="game.currentGame.userInput" type="text" class="form-control" id="wordInput">
-                </div>
-            </div>
-
-            <div ng-if="game.stateFinished()">
-                <div ng-controller="ScoresController as scores">
-                    <h4>Final Score:</h4>
-                    {{scores.currentGame.score}}
-
-                    <div ng-if="scores.notEntered()">
-                        Enter your name to add to the high scores list: 
-                        <div class="form-group">
-                            <input ng-model="scores.userName" ng-minlength="3" ng-maxlength="16" ng-required="required" type="text" class="form-control">
-                            <button type="button" ng-click="scores.submitScore()" class="btn btn-primary">Submit</button>
-                        </div>
-                    </div>
-
-                    <div ng-if="scores.entered() && scores.position">
-                        Congratulations! Your score has been saved and it puts you at #{{scores.position}} on the leaderboard!
-                    </div>
-
-                    <h3>Current High Scores</h3>
-                    <div ng-if="scores.scoresLoaded">
-                        <ul>
-                            <li ng-repeat="item in scores.list">
-                                <span>{{item.name}}</span> 
-                                <span>{{item.score}}</span>
-                            </li>
-                        </ul>
-                    </div>
-                </div>
-                    
-            </div>
-
         </div>
+
+        <div class="container" ng-if="game.statePlaying()">
+            <div class="row-fluid">
+                <div class="col-sm-4 info-panel">
+                    <h4>Current Score</h4>
+                    
+                    <span class="info-panel__detail">
+                        {{game.currentGame.score}}
+                    </span>
+                </div>
+
+                <div class="col-sm-4 info-panel info-panel--main">
+                    <h4>Word</h4>
+                    
+                    <span class="info-panel__detail">
+                        {{game.currentGame.word.jumbled}}
+                    </span>
+
+                    <div class="word-score">
+                        Potential word score: <span class="word-score__val">{{game.currentGame.word.score}}</span>
+                    </div>
+                </div>
+                <div class="col-sm-4 info-panel">
+                    <h4>Time left</h4>
+                    
+                    <span class="info-panel__detail">
+                        {{game.timeLeft}}
+                    </span>
+
+                </div>
+            </div>
+                
+            <div class="row-fluid">
+                <div class="col-sm-12">
+                    <div class="form-group">
+                        <input ng-change="game.evaluate()" ng-model="game.currentGame.userInput" type="text" 
+                            class="form-control game-input" id="wordInput" placeholder="Type here...">
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="container" ng-if="game.stateFinished()">
+            <div ng-controller="ScoresController as scores">
+                <h4>Final Score:</h4>
+                {{scores.currentGame.score}}
+
+                <div ng-if="scores.notEntered()">
+                    Enter your name to add to the high scores list: 
+                    <div class="form-group">
+                        <input ng-model="scores.userName" ng-minlength="3" ng-maxlength="16" ng-required="required" type="text" class="form-control">
+                        <button type="button" ng-click="scores.submitScore()" class="btn btn-primary">Submit</button>
+                    </div>
+                </div>
+
+                <div ng-if="scores.entered() && scores.position">
+                    Congratulations! Your score has been saved and it puts you at #{{scores.position}} on the leaderboard!
+                </div>
+
+                <h3>Current High Scores</h3>
+                <div ng-if="scores.scoresLoaded">
+                    <ul>
+                        <li ng-repeat="item in scores.list">
+                            <span>{{item.name}}</span> 
+                            <span>{{item.score}}</span>
+                        </li>
+                    </ul>
+                </div>
+            </div>
+                
+        </div>
+
     </body>
 
 </html>

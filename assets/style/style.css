@@ -1,0 +1,78 @@
+/**
+ * Bootstrap overrides
+ */
+body {
+    background-color: #f8f8f8;
+}
+h1, h2, h3, h4, p, div, body {
+    color: #444;
+}
+h1, h2, h3 {
+    text-align: center;
+}
+h4 {
+    color: #5e50a7;
+    font-family: arial;
+    font-weight: bold;
+}
+.btn-primary {
+    background-color: #d23939;
+    border-color: #d23939;
+}
+.btn-primary:hover {
+    background-color: #ec2d2d;
+    border-color: #ec2d2d;
+    text-decoration: underline;
+}
+
+/**
+ * Components
+ */
+.title {
+    text-align: center;
+    margin-top: 60px;
+}
+.title__main {
+    font-family: "arial black";
+    font-size: 72px;
+    letter-spacing: .1em;
+}
+.title__sub {
+    font-size: 24px;
+}
+.title__separator {
+    border-color: #777;
+    width: 150px;
+    margin-left: auto;
+    margin-right: auto;
+}
+
+.btn-start {
+    margin-left: auto;
+    margin-right: auto;
+    display: block;
+    font-size: 24px;
+    margin-top: 200px;
+}
+
+.game-input {
+    width: 300px;
+    margin-left: auto;
+    margin-right: auto;
+    font-size: 24px;
+    height: 48px;
+    letter-spacing: .1em;
+    margin-top: 2em;
+}
+
+.info-panel {
+    margin-top: 2em;
+    text-align: center;
+}
+.info-panel__detail {
+    font-size: 24px;
+    font-weight: bold;
+}
+.info-panel--main .info-panel__detail {
+    font-size: 40px;
+}

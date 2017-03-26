@@ -6,13 +6,13 @@ body {
 }
 h1, h2, h3, h4, p, div, body {
     color: #444;
+    font-family: arial, sans-serif;
 }
 h1, h2, h3 {
     text-align: center;
 }
 h4 {
     color: #5e50a7;
-    font-family: arial;
     font-weight: bold;
 }
 .btn-primary {
@@ -39,7 +39,7 @@ table {
     margin-top: 60px;
 }
 .title__main {
-    font-family: "arial black";
+    font-weight: bolder;
     font-size: 72px;
     letter-spacing: .1em;
 }

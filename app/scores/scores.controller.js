@@ -8,22 +8,29 @@ function ScoresController(gameEngineService, apiService) {
     this.userName = "";
     this.scoreEntered = false;
     this.scoresLoaded = false;
+    this.position = true;
     this.list = [];
     this.loadHighScores();
 }
 
-ScoresController.prototype.loadHighScores = function() {
+ScoresController.prototype.loadHighScores = function(callback) {
     const self = this;
     self._apiService.getScores(function retrievedHighScores(scores) {
         self.scoresLoaded = true;
         self.list = scores;
+
+        if (typeof callback !== 'undefined') {
+            callback(scores);
+        }
     });
 }
 
 ScoresController.prototype.submitScore = function() {
-    this._apiService.addScore(this.userName, this.currentGame.score);
+    const scoreId = this._apiService.addScore(this.userName, this.currentGame.score);
     this.scoreEntered = true;
-    this.loadHighScores();
+    this.loadHighScores((scoreList) => {
+        this.position = this._getPosition(scoreId, scoreList);
+    });
 }
 
 ScoresController.prototype.entered = function() {
@@ -34,3 +41,13 @@ ScoresController.prototype.notEntered = function() {
     return !this.entered();
 }
 
+
+ScoresController.prototype._getPosition = function(scoreId, scoreList) {
+    let position = null;
+    scoreList.forEach((item, idx) => {
+        if (item.id === scoreId) {
+            position = (idx + 1);
+        }
+    });
+    return position;
+}

@@ -24,14 +24,31 @@ apiService.prototype.getWords = function(callback) {
         const words = Object.keys(this.database.words);
         this.$timeout(() => callback(words));
     }
-    this.queueAction(this.getWords, callback);
+    else {
+        this.queueAction(this.getWords, callback);
+    }
 }
 
 apiService.prototype.getScores = function(callback) {
     if (this.database !== null) {
-        this.$timeout(() => callback(this.database.scores));
+        let scores = [];
+        for (let key in this.database.scores) {
+            let scoreObj = this.database.scores[key];
+            scores.push({
+                id: key,
+                score: scoreObj.score,
+                name: scoreObj.name
+            });
+        }
+        scores = scores.sort((a, b) => {
+            return b.score - a.score;
+        });
+        
+        this.$timeout(() => callback(scores));
     }
-    this.queueAction(this.getScores, callback);
+    else {
+        this.queueAction(this.getScores, callback); 
+    }
 }
 
 apiService.prototype.addScore = function(name, score) {
@@ -44,7 +61,8 @@ apiService.prototype.addScore = function(name, score) {
             score
         }
     }
-    return this.rootReference.update(scoreUpdate);
+    this.rootReference.update(scoreUpdate);
+    return scoreId;
 }
 
 apiService.prototype.processQueuedActions = function() {

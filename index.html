@@ -51,8 +51,8 @@
                         </div>
                     </div>
 
-                    <div ng-if="scores.entered()">
-                        Congratulations! Your score has been saved and it puts you at #14 on the leaderboard!
+                    <div ng-if="scores.entered() && scores.position">
+                        Congratulations! Your score has been saved and it puts you at #{{scores.position}} on the leaderboard!
                     </div>
 
                     <h3>Current High Scores</h3>

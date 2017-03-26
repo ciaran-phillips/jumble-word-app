@@ -45,6 +45,10 @@ class GameController {
     }
 
     _updateGame() {
+        // At this point we have data in our local firebase, and
+        // the callback should fire immediately. Otherwise we
+        // would need to set an intermediate state here to 
+        // pause the timer
         this._wordService.get((wordDetails) => {
             this._gameEngineService.setNewWord(this.currentGame, wordDetails);
         });

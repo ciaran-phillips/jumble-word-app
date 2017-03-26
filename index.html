@@ -12,6 +12,11 @@
     </head>
 
     <body ng-controller="GameController as game">
+
+        <!--
+            PAGE HEADING
+        -->
+
         <div class="container">
             <div class="title">
                 <h1 class="title__main">
@@ -28,6 +33,10 @@
                 <button class="btn btn-primary btn-start" ng-click="game.startGame()">start game</button>
             </div>
         </div>
+
+        <!-- 
+            GAME VIEW
+        -->
 
         <div class="container" ng-if="game.statePlaying()">
             <div class="row-fluid">
@@ -69,6 +78,10 @@
                 </div>
             </div>
         </div>
+
+        <!--
+            HIGH SCORES VIEW
+        -->
 
         <div ng-if="game.stateFinished()">
             <div class="container scores-page" ng-controller="ScoresController as scores">

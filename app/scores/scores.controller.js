@@ -14,6 +14,8 @@ class ScoresController {
     }
 
     submitScore() {
+        // we should really be validating the inputted name here, to make sure
+        // it's not empty, and not ridiculously long (we aren't truncating them)
         const scoreId = this._apiService.addScore(this.userName, this.currentGame.score);
         this.scoreEntered = true;
         this._loadHighScores((scoreList) => {

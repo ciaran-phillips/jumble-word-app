@@ -5,7 +5,16 @@ class apiService {
         this._database = null;
 
         // If data is requested before we have it back from the API, 
-        // we queue the requests here
+        // we queue the requests in this._queuedActions
+        //
+        // This is a bit different to normal API patterns, in that
+        // we're only ever going to be waiting on the backend during
+        // initial page load (then we're just relying on the firebase lib
+        // to keep things up to date).
+        // 
+        // It would probably have been cleaner to just allow a delay 
+        // at the start to get all the data, and then have only synchronous
+        // operations after that
         this._queuedActions = [];
 
         this._rootReference.on('value', (snapshot) => {
@@ -27,6 +36,9 @@ class apiService {
     getScores(callback) {
         if (this._database !== null) {
             let scores = [];
+            // I couldn't see a way to store arrays in firebase, so 
+            // what we get from the database here is an object that
+            // requires a bit of processing
             for (let key in this._database.scores) {
                 let scoreObj = this._database.scores[key];
                 scores.push({

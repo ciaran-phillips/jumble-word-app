@@ -36,6 +36,14 @@ class gameEngineService {
         return (game.word.original === input);
     }
 
+    /**
+     * Figure out whether the user has made a move that requires 
+     * reducing the score for this word (i.e., if they have deleted or changed
+     * characters that were already entered)
+     * 
+     * Reduces the score by 1 per backward move. If they have changed only a single
+     * character, but it is 3 characters back in the word, then we subtract 3
+     */
     _scoreReductionAmount(previousInput, currentInput) {
         previousInput = this._normalize(previousInput);
         currentInput = this._normalize(currentInput);
@@ -46,6 +54,7 @@ class gameEngineService {
         else {
             let i = 0;
             let earliestDivergence = previousInput.length;
+            // finds the first character that's different between the two strings
             while (i < previousInput.length && earliestDivergence === previousInput.length) {
                 if (i > currentInput.length || previousInput[i] !== currentInput[i]) {
                     earliestDivergence = i;

@@ -1,4 +1,5 @@
 class wordService {
+    
     constructor(apiService) {
         this.apiService = apiService;
     }

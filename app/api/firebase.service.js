@@ -1,7 +1,9 @@
-module.exports = ['firebaseLib', 'apiConfig', firebaseService];
-
- function firebaseService(firebaseLib, apiConfig) {
-    firebaseLib.initializeApp(apiConfig);
-    
-    return firebaseLib;
+class firebaseService {
+     constructor(firebaseLib, apiConfig) {
+        firebaseLib.initializeApp(apiConfig);
+        
+        return firebaseLib;
+     }
 }
+
+module.exports = ['firebaseLib', 'apiConfig', firebaseService];

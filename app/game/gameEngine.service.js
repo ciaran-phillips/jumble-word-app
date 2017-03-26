@@ -1,5 +1,5 @@
 class gameEngineService {
-    
+
     constructor() {
         this.game = null;
     }

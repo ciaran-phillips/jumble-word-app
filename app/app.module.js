@@ -1,5 +1,5 @@
-const angular = require('angular');
-const api = require('./api/api.module.js')
+require('./game/game.module.js');
 
-angular.module('app', ['api'])
-    .controller('GameController', require('./game.controller.js'));
+const angular = require('angular');
+
+angular.module('app', ['game']);

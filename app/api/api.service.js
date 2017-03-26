@@ -27,7 +27,7 @@ apiService.prototype.getWords = function(callback) {
     this.queueAction(this.getWords, callback);
 }
 
-apiService.prototype.getScores = function() {
+apiService.prototype.getScores = function(callback) {
     if (this.database !== null) {
         this.$timeout(() => callback(this.database.scores));
     }

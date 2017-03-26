@@ -42,6 +42,28 @@
                 <div ng-controller="ScoresController as scores">
                     <h4>Final Score:</h4>
                     {{scores.currentGame.score}}
+
+                    <div ng-if="scores.notEntered()">
+                        Enter your name to add to the high scores list: 
+                        <div class="form-group">
+                            <input ng-model="scores.userName" ng-minlength="3" ng-maxlength="16" ng-required="required" type="text" class="form-control">
+                            <button type="button" ng-click="scores.submitScore()" class="btn btn-primary">Submit</button>
+                        </div>
+                    </div>
+
+                    <div ng-if="scores.entered()">
+                        Congratulations! Your score has been saved and it puts you at #14 on the leaderboard!
+                    </div>
+
+                    <h3>Current High Scores</h3>
+                    <div ng-if="scores.scoresLoaded">
+                        <ul>
+                            <li ng-repeat="item in scores.list">
+                                <span>{{item.name}}</span> 
+                                <span>{{item.score}}</span>
+                            </li>
+                        </ul>
+                    </div>
                 </div>
                     
             </div>

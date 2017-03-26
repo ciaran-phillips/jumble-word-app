@@ -1,14 +1,17 @@
-module.exports = ['$scope', 'wordService', 'gameEngineService', GameController];
+module.exports = ['$scope', '$timeout', 'wordService', 'gameEngineService', GameController];
 
 const STATE_NOT_STARTED = 'not_started';
 const STATE_INITIALIZING = 'intializing';
 const STATE_PLAYING = 'playing';
 const STATE_FINISHED = 'finished';
 
+const TIME_LIMIT = 40;
 
-function GameController($scope, wordService, gameEngineService) {
+
+function GameController($scope, $timeout, wordService, gameEngineService) {
     const self = this;
     self.wordService = wordService;
+    self.$timeout = $timeout;
     self.gameEngineService = gameEngineService;
 
     $scope.state = STATE_NOT_STARTED;
@@ -18,6 +21,8 @@ function GameController($scope, wordService, gameEngineService) {
         wordService.get((wordDetails) => {
             $scope.currentGame = self.gameEngineService.newGame(wordDetails);
             $scope.state = STATE_PLAYING;
+            $scope.timeLeft = TIME_LIMIT;
+            self.startTimer($scope);
         });
     }
 
@@ -39,3 +44,17 @@ GameController.prototype.updateGame = function($scope) {
     });
 }
 
+GameController.prototype.startTimer = function($scope) {
+    const interval = 1000;
+    const self = this;
+    function tick() {
+        $scope.timeLeft = $scope.timeLeft - 1;
+        if ($scope.timeLeft === 0) {
+            $scope.state = STATE_FINISHED;
+        }
+        else {
+            self.$timeout(tick, interval);
+        }
+    }
+    self.$timeout(tick, interval);
+}

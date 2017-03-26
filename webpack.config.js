@@ -2,6 +2,7 @@ module.exports = {
     entry: "./app/app.module.js",
     output: {
         path: __dirname,
+        publicPath: "/jumble-word-app/",
         filename: "bundle.js"
     },
     module: {

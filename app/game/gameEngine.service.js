@@ -1,13 +1,18 @@
 class gameEngineService {
     
+    constructor() {
+        this.game = null;
+    }
+    
     newGame(wordDetails) {
-        return {
+        this.game = {
             score: 0,
             word: wordDetails,
             timeLeft: 40,
             userInput: "",
             previousInput: ""
         };
+        return this.game;
     }
 
     updateGameScore(game) {

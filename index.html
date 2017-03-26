@@ -39,8 +39,11 @@
             </div>
 
             <div ng-if="game.stateFinished()">
+                <div ng-controller="ScoresController as scores">
                     <h4>Final Score:</h4>
-                    {{game.currentGame.score}}
+                    {{scores.currentGame.score}}
+                </div>
+                    
             </div>
 
         </div>

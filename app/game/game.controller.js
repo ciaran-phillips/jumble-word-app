@@ -1,55 +1,62 @@
-const STATE_NOT_STARTED = 'not_started';
-const STATE_INITIALIZING = 'intializing';
-const STATE_PLAYING = 'playing';
-const STATE_FINISHED = 'finished';
-
-const TIME_LIMIT = 40;
-
-
 class GameController {
+
     constructor($timeout, wordService, gameEngineService) {
-        const self = this;
-        self._wordService = wordService;
-        self._$timeout = $timeout;
-        self._gameEngineService = gameEngineService;
+        this._STATE_NOT_STARTED = 'not_started';
+        this._STATE_INITIALIZING = 'intializing';
+        this._STATE_PLAYING = 'playing';
+        this._STATE_FINISHED = 'finished';
 
-        self._state = STATE_NOT_STARTED;
+        this._TIME_LIMIT = 40;
 
-        self.startGame = function startGame() {
-            self._state = STATE_INITIALIZING;
-            wordService.get((wordDetails) => {
-                self.currentGame = self._gameEngineService.newGame(wordDetails);
-                self._state = STATE_PLAYING;
-                self.timeLeft = TIME_LIMIT;
-                self.startTimer();
-            });
-        }
+        this._wordService = wordService;
+        this._$timeout = $timeout;
+        this._gameEngineService = gameEngineService;
 
-        self.evaluate = function(userInput) {
-            self._gameEngineService.updateGameScore(self.currentGame);
-            if (self._gameEngineService.isCorrect(self.currentGame)) {
-                self.updateGame();
-            }
-        }
-
-        self.stateNotStarted = () => self._state === STATE_NOT_STARTED;
-        self.statePlaying = () => self._state === STATE_PLAYING;
-        self.stateFinished = () => self._state === STATE_FINISHED;
+        this._state = this._STATE_NOT_STARTED;
     }
 
-    updateGame() {
+    evaluate(userInput) {
+        this._gameEngineService.updateGameScore(this.currentGame);
+        if (this._gameEngineService.isCorrect(this.currentGame)) {
+            this._updateGame();
+        }
+    }
+
+    startGame() {
+        this._state = this._STATE_INITIALIZING;
+        this._wordService.get((wordDetails) => {
+            this.currentGame = this._gameEngineService.newGame(wordDetails);
+            this._state = this._STATE_PLAYING;
+            this.timeLeft = this._TIME_LIMIT;
+            this._startTimer();
+        });
+    }
+
+    stateNotStarted() {
+        return this._state === this._STATE_NOT_STARTED;
+    }
+
+    statePlaying() {
+        return this._state === this._STATE_PLAYING;
+    }
+
+    stateFinished() {
+        return this._state === this._STATE_FINISHED;
+    }
+
+    _updateGame() {
         this._wordService.get((wordDetails) => {
             this._gameEngineService.setNewWord(this.currentGame, wordDetails);
         });
     }
 
-    startTimer() {
+    _startTimer() {
         const interval = 1000;
         const self = this;
         function tick() {
             self.timeLeft--;
             if (self.timeLeft === 0) {
-                self._state = STATE_FINISHED;
+                self._state = self._STATE_FINISHED;
             }
             else {
                 self._$timeout(tick, interval);

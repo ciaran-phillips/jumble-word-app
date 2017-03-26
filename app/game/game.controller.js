@@ -1,4 +1,4 @@
-module.exports = ['$scope', '$timeout', 'wordService', 'gameEngineService', GameController];
+module.exports = ['$timeout', 'wordService', 'gameEngineService', GameController];
 
 const STATE_NOT_STARTED = 'not_started';
 const STATE_INITIALIZING = 'intializing';
@@ -8,49 +8,49 @@ const STATE_FINISHED = 'finished';
 const TIME_LIMIT = 40;
 
 
-function GameController($scope, $timeout, wordService, gameEngineService) {
+function GameController($timeout, wordService, gameEngineService) {
     const self = this;
     self.wordService = wordService;
     self.$timeout = $timeout;
     self.gameEngineService = gameEngineService;
 
-    $scope.state = STATE_NOT_STARTED;
+    self.state = STATE_NOT_STARTED;
 
-    $scope.startGame = function startGame() {
-        $scope.state = STATE_INITIALIZING;
+    self.startGame = function startGame() {
+        self.state = STATE_INITIALIZING;
         wordService.get((wordDetails) => {
-            $scope.currentGame = self.gameEngineService.newGame(wordDetails);
-            $scope.state = STATE_PLAYING;
-            $scope.timeLeft = TIME_LIMIT;
-            self.startTimer($scope);
+            self.currentGame = self.gameEngineService.newGame(wordDetails);
+            self.state = STATE_PLAYING;
+            self.timeLeft = TIME_LIMIT;
+            self.startTimer();
         });
     }
 
-    $scope.evaluate = function(userInput) {
-        self.gameEngineService.updateGameScore($scope.currentGame);
-        if (self.gameEngineService.isCorrect($scope.currentGame)) {
-            self.updateGame($scope);
+    self.evaluate = function(userInput) {
+        self.gameEngineService.updateGameScore(self.currentGame);
+        if (self.gameEngineService.isCorrect(self.currentGame)) {
+            self.updateGame();
         }
     }
 
-    $scope.stateNotStarted = () => $scope.state === STATE_NOT_STARTED;
-    $scope.statePlaying = () => $scope.state === STATE_PLAYING;
-    $scope.stateFinished = () => $scope.state === STATE_FINISHED;
+    self.stateNotStarted = () => self.state === STATE_NOT_STARTED;
+    self.statePlaying = () => self.state === STATE_PLAYING;
+    self.stateFinished = () => self.state === STATE_FINISHED;
 }
 
-GameController.prototype.updateGame = function($scope) {
+GameController.prototype.updateGame = function() {
     this.wordService.get((wordDetails) => {
-        this.gameEngineService.setNewWord($scope.currentGame, wordDetails);
+        this.gameEngineService.setNewWord(this.currentGame, wordDetails);
     });
 }
 
-GameController.prototype.startTimer = function($scope) {
+GameController.prototype.startTimer = function() {
     const interval = 1000;
     const self = this;
     function tick() {
-        $scope.timeLeft = $scope.timeLeft - 1;
-        if ($scope.timeLeft === 0) {
-            $scope.state = STATE_FINISHED;
+        self.timeLeft--;
+        if (self.timeLeft === 0) {
+            self.state = STATE_FINISHED;
         }
         else {
             self.$timeout(tick, interval);

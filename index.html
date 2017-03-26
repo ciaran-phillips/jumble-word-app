@@ -9,38 +9,38 @@
             integrity="sha384-BVYiiSIFeK1dGmJRAkycuHAHRg32OmUcww7on3RYdg4Va+PmSTsz/K68vbdEjh4u" crossorigin="anonymous">
     </head>
 
-    <body ng-controller="GameController">
+    <body ng-controller="GameController as game">
         <div class="container">
             <h1>
                 Jumble Word Game
             </h1>
-            <div ng-if="stateNotStarted()">
+            <div ng-if="game.stateNotStarted()">
                     
-                <button class="btn btn-primary" ng-click="startGame()">Start</button>
+                <button class="btn btn-primary" ng-click="game.startGame()">Start</button>
             </div>
 
-            <div ng-if="statePlaying()">
+            <div ng-if="game.statePlaying()">
                 <div class="col-sm-4">
                     <h4>Current Score:</h4>
-                    {{currentGame.score}}
+                    {{game.currentGame.score}}
                 </div>
                 <div class="col-sm-4">
                     <h4>Word:</h4>
-                    {{currentGame.word.jumbled}}
+                    {{game.currentGame.word.jumbled}}
                 </div>
                 <div class="col-sm-4">
                     <h4>Time left:</h4>
-                    {{timeLeft}}
+                    {{game.timeLeft}}
 
                 </div>
                 <div class="form-group">
-                    <input ng-change="evaluate()" ng-model="currentGame.userInput" type="text" class="form-control" id="wordInput">
+                    <input ng-change="game.evaluate()" ng-model="game.currentGame.userInput" type="text" class="form-control" id="wordInput">
                 </div>
             </div>
 
-            <div ng-if="stateFinished()">
-                <h4>Final Score:</h4>
-                {{currentGame.score}}
+            <div ng-if="game.stateFinished()">
+                    <h4>Final Score:</h4>
+                    {{game.currentGame.score}}
             </div>
 
         </div>

@@ -24,6 +24,12 @@ h4 {
     border-color: #ec2d2d;
     text-decoration: underline;
 }
+.row {
+    margin-bottom: 20px;
+}
+table {
+    background: #fff;
+}
 
 /**
  * Components
@@ -75,4 +81,7 @@ h4 {
 }
 .info-panel--main .info-panel__detail {
     font-size: 40px;
+}
+.scores-page {
+    text-align: center;
 }

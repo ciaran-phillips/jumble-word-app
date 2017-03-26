@@ -14,16 +14,29 @@
             <h1>
                 Jumble Word Game
             </h1>
-            <div>
-                {{currentWord}}
+            <div ng-if="stateNotStarted()">
+                    
+                <button class="btn btn-primary" ng-click="startGame()">Start</button>
             </div>
-            <p>
-                {{score}}
-            </p>
-            <p>
-                {{original}}
-            </p>
-            
+
+            <div ng-if="statePlaying()">
+                <div class="col-sm-4">
+                    <h4>Current Score:</h4>
+                    {{currentGame.score}}
+                </div>
+                <div class="col-sm-4">
+                    <h4>Word:</h4>
+                    {{currentGame.word.jumbled}}
+                </div>
+                <div class="col-sm-4">
+                    <h4>Time left:</h4>
+                    {{currentGame.timeLeft}}
+
+                </div>
+                <div class="form-group">
+                    <input ng-change="evaluate()" ng-model="currentGame.userInput" type="text" class="form-control" id="wordInput">
+                </div>
+            </div>
 
         </div>
     </body>

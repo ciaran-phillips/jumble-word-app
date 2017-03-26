@@ -1,8 +1,7 @@
-module.exports = ['firebaseService', apiService];
+module.exports = ['firebaseService', '$timeout', apiService];
 
-
-function apiService(firebaseService) {
-    
+function apiService(firebaseService, $timeout) {
+        this.$timeout = $timeout;
         this.rootReference = firebaseService.database().ref();
         this.database = null;
 
@@ -23,14 +22,14 @@ apiService.prototype.getFullDatabase = function() {
 apiService.prototype.getWords = function(callback) {
     if (this.database !== null) {
         const words = Object.keys(this.database.words);
-        callback(words);
+        this.$timeout(() => callback(words));
     }
     this.queueAction(this.getWords, callback);
 }
 
 apiService.prototype.getScores = function() {
     if (this.database !== null) {
-        callback(this.database.scores);
+        this.$timeout(() => callback(this.database.scores));
     }
     this.queueAction(this.getScores, callback);
 }

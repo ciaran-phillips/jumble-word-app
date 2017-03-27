@@ -179,7 +179,7 @@ module.exports = angular.module('game', ['api']).service('wordService', __webpac
 
 var angular = __webpack_require__(2);
 
-module.exports = angular.module('scores', ['api']).controller('ScoresController', __webpack_require__(14));
+module.exports = angular.module('scores', ['api', 'game']).controller('ScoresController', __webpack_require__(14));
 
 /***/ }),
 /* 6 */
@@ -33553,92 +33553,165 @@ module.exports = {
 "use strict";
 
 
+var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
+
 function _defineProperty(obj, key, value) { if (key in obj) { Object.defineProperty(obj, key, { value: value, enumerable: true, configurable: true, writable: true }); } else { obj[key] = value; } return obj; }
 
-module.exports = ['firebaseService', '$timeout', apiService];
+function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
 
-function apiService(firebaseService, $timeout) {
-    var _this = this;
+var apiService = function () {
+    function apiService(firebaseService, $timeout) {
+        var _this = this;
 
-    this.$timeout = $timeout;
-    this.rootReference = firebaseService.database().ref();
-    this.database = null;
+        _classCallCheck(this, apiService);
 
-    // If data is requested before we have it back from the API, 
-    // we queue the requests here
-    this.queuedActions = [];
+        this._$timeout = $timeout;
+        this._rootReference = firebaseService.database().ref();
+        this._database = null;
 
-    this.rootReference.on('value', function (snapshot) {
-        _this.database = snapshot.val();
-        _this.processQueuedActions();
-    });
-}
+        // If data is requested before we have it back from the API, 
+        // we queue the requests in this._queuedActions
+        //
+        // This is a bit different to normal API patterns, in that
+        // we're only ever going to be waiting on the backend during
+        // initial page load (then we're just relying on the firebase lib
+        // to keep things up to date).
+        // 
+        // It would probably have been cleaner to just allow a delay 
+        // at the start to get all the data, and then have only synchronous
+        // operations after that
+        this._queuedActions = [];
 
-apiService.prototype.getFullDatabase = function () {
-    return this.database;
-};
-
-apiService.prototype.getWords = function (callback) {
-    if (this.database !== null) {
-        var words = Object.keys(this.database.words);
-        this.$timeout(function () {
-            return callback(words);
+        this._rootReference.on('value', function (snapshot) {
+            _this._database = snapshot.val();
+            _this._processQueuedActions();
         });
-    } else {
-        this.queueAction(this.getWords, callback);
     }
-};
 
-apiService.prototype.getScores = function (callback) {
-    if (this.database !== null) {
-        var scores = [];
-        for (var key in this.database.scores) {
-            var scoreObj = this.database.scores[key];
-            scores.push({
-                id: key,
-                score: scoreObj.score,
-                name: scoreObj.name
+    /**
+     * Get array of words from the API 
+     * 
+     * @param {function} callback
+     *      callback that accepts an array of strings
+     *      as the first argument, i.e. callback(string[])
+     */
+
+
+    _createClass(apiService, [{
+        key: 'getWords',
+        value: function getWords(callback) {
+            if (this._database !== null) {
+                var words = Object.keys(this._database.words);
+                this._$timeout(function () {
+                    return callback(words);
+                });
+            } else {
+                this._queueAction(this.getWords, callback);
+            }
+        }
+
+        /**
+         * Get array of high scores from the API
+         * 
+         * @param {function} callback
+         *      callback accepting an array of
+         *      score objects, i.e. callback(score[])
+         *      where a score object takes the form:
+         *      {id: string, score: number, name: string}
+         */
+
+    }, {
+        key: 'getScores',
+        value: function getScores(callback) {
+            if (this._database !== null) {
+                var scores = [];
+                // I couldn't see a way to store arrays in firebase, so 
+                // what we get from the database here is an object that
+                // requires a bit of processing
+                for (var key in this._database.scores) {
+                    var scoreObj = this._database.scores[key];
+                    scores.push({
+                        id: key,
+                        score: scoreObj.score,
+                        name: scoreObj.name
+                    });
+                }
+                scores = scores.sort(function (a, b) {
+                    return b.score - a.score;
+                });
+
+                this._$timeout(function () {
+                    return callback(scores);
+                });
+            } else {
+                this._queueAction(this.getScores, callback);
+            }
+        }
+
+        /**
+         * Add a score to the database
+         * 
+         * @param {string} name
+         *      User name to be associated with the score
+         * @param {number} score
+         *      Score that the user achieved
+         * 
+         * @return {string}
+         *      ID given to this score record in the DB
+         */
+
+    }, {
+        key: 'addScore',
+        value: function addScore(name, score) {
+            var scoreId = this._rootReference.child('scores').push().key;
+            var scoreReference = "/scores/" + scoreId;
+
+            var scoreUpdate = _defineProperty({}, scoreReference, {
+                name: name,
+                score: score
+            });
+            this._rootReference.update(scoreUpdate);
+            return scoreId;
+        }
+
+        /**
+         * Calls any queued API calls, and clears the queue
+         */
+
+    }, {
+        key: '_processQueuedActions',
+        value: function _processQueuedActions() {
+            var _this2 = this;
+
+            this._queuedActions.forEach(function (action) {
+                action.apiCall.call(_this2, action.callback);
+            });
+            this._queuedActions = [];
+        }
+
+        /**
+         * Queues an API call to be invoked later
+         * 
+         * @param {function} apiCall
+         *      API call to be invoked
+         * @param {function} callback
+         *      callback to be invoked when the API call is completed
+         */
+
+    }, {
+        key: '_queueAction',
+        value: function _queueAction(apiCall, callback) {
+            this._queuedActions.push({
+                apiCall: apiCall,
+                callback: callback
             });
         }
-        scores = scores.sort(function (a, b) {
-            return b.score - a.score;
-        });
+    }]);
 
-        this.$timeout(function () {
-            return callback(scores);
-        });
-    } else {
-        this.queueAction(this.getScores, callback);
-    }
-};
+    return apiService;
+}();
 
-apiService.prototype.addScore = function (name, score) {
-    var scoreId = this.rootReference.child('scores').push().key;
-    var scoreReference = "/scores/" + scoreId;
-
-    var scoreUpdate = _defineProperty({}, scoreReference, {
-        name: name,
-        score: score
-    });
-    this.rootReference.update(scoreUpdate);
-    return scoreId;
-};
-
-apiService.prototype.processQueuedActions = function () {
-    var _this2 = this;
-
-    this.queuedActions.forEach(function (action) {
-        action.apiCall.call(_this2, action.callback);
-    });
-    this.queuedActions = [];
-};
-
-apiService.prototype.queueAction = function (apiCall, callback) {
-    this.queuedActions.push({
-        apiCall: apiCall,
-        callback: callback
-    });
-};
+module.exports = ['firebaseService', '$timeout', apiService];
 
 /***/ }),
 /* 9 */
@@ -33647,13 +33720,17 @@ apiService.prototype.queueAction = function (apiCall, callback) {
 "use strict";
 
 
-module.exports = ['firebaseLib', 'apiConfig', firebaseService];
+function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
 
-function firebaseService(firebaseLib, apiConfig) {
+var firebaseService = function firebaseService(firebaseLib, apiConfig) {
+   _classCallCheck(this, firebaseService);
+
    firebaseLib.initializeApp(apiConfig);
 
    return firebaseLib;
-}
+};
+
+module.exports = ['firebaseLib', 'apiConfig', firebaseService];
 
 /***/ }),
 /* 10 */
@@ -33677,72 +33754,98 @@ angular.module('app', ['game', 'scores', 'api']);
 "use strict";
 
 
-module.exports = ['$timeout', 'wordService', 'gameEngineService', GameController];
+var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
 
-var STATE_NOT_STARTED = 'not_started';
-var STATE_INITIALIZING = 'intializing';
-var STATE_PLAYING = 'playing';
-var STATE_FINISHED = 'finished';
+function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
 
-var TIME_LIMIT = 10;
+var GameController = function () {
+    function GameController($timeout, wordService, gameEngineService) {
+        _classCallCheck(this, GameController);
 
-function GameController($timeout, wordService, gameEngineService) {
-    var self = this;
-    self.wordService = wordService;
-    self.$timeout = $timeout;
-    self.gameEngineService = gameEngineService;
+        this._STATE_NOT_STARTED = 'not_started';
+        this._STATE_INITIALIZING = 'intializing';
+        this._STATE_PLAYING = 'playing';
+        this._STATE_FINISHED = 'finished';
 
-    self.state = STATE_NOT_STARTED;
+        this._TIME_LIMIT = 40;
 
-    self.startGame = function startGame() {
-        self.state = STATE_INITIALIZING;
-        wordService.get(function (wordDetails) {
-            self.currentGame = self.gameEngineService.newGame(wordDetails);
-            self.state = STATE_PLAYING;
-            self.timeLeft = TIME_LIMIT;
-            self.startTimer();
-        });
-    };
+        this._wordService = wordService;
+        this._$timeout = $timeout;
+        this._gameEngineService = gameEngineService;
 
-    self.evaluate = function (userInput) {
-        self.gameEngineService.updateGameScore(self.currentGame);
-        if (self.gameEngineService.isCorrect(self.currentGame)) {
-            self.updateGame();
-        }
-    };
-
-    self.stateNotStarted = function () {
-        return self.state === STATE_NOT_STARTED;
-    };
-    self.statePlaying = function () {
-        return self.state === STATE_PLAYING;
-    };
-    self.stateFinished = function () {
-        return self.state === STATE_FINISHED;
-    };
-}
-
-GameController.prototype.updateGame = function () {
-    var _this = this;
-
-    this.wordService.get(function (wordDetails) {
-        _this.gameEngineService.setNewWord(_this.currentGame, wordDetails);
-    });
-};
-
-GameController.prototype.startTimer = function () {
-    var interval = 1000;
-    var self = this;
-    function tick() {
-        self.timeLeft--;
-        if (self.timeLeft === 0) {
-            self.state = STATE_FINISHED;
-        } else {
-            self.$timeout(tick, interval);
-        }
+        this._state = this._STATE_NOT_STARTED;
     }
-    self.$timeout(tick, interval);
-};
+
+    _createClass(GameController, [{
+        key: 'evaluate',
+        value: function evaluate(userInput) {
+            this._gameEngineService.updateGameScore(this.currentGame);
+            if (this._gameEngineService.isCorrect(this.currentGame)) {
+                this._updateGame();
+            }
+        }
+    }, {
+        key: 'startGame',
+        value: function startGame() {
+            var _this = this;
+
+            this._state = this._STATE_INITIALIZING;
+            this._wordService.get(function (wordDetails) {
+                _this.currentGame = _this._gameEngineService.newGame(wordDetails);
+                _this._state = _this._STATE_PLAYING;
+                _this.timeLeft = _this._TIME_LIMIT;
+                _this._startTimer();
+            });
+        }
+    }, {
+        key: 'stateNotStarted',
+        value: function stateNotStarted() {
+            return this._state === this._STATE_NOT_STARTED;
+        }
+    }, {
+        key: 'statePlaying',
+        value: function statePlaying() {
+            return this._state === this._STATE_PLAYING;
+        }
+    }, {
+        key: 'stateFinished',
+        value: function stateFinished() {
+            return this._state === this._STATE_FINISHED;
+        }
+    }, {
+        key: '_updateGame',
+        value: function _updateGame() {
+            var _this2 = this;
+
+            // At this point we have data in our local firebase, and
+            // the callback should fire immediately. Otherwise we
+            // would need to set an intermediate state here to 
+            // pause the timer
+            this._wordService.get(function (wordDetails) {
+                _this2._gameEngineService.setNewWord(_this2.currentGame, wordDetails);
+            });
+        }
+    }, {
+        key: '_startTimer',
+        value: function _startTimer() {
+            var interval = 1000;
+            var self = this;
+            function tick() {
+                self.timeLeft--;
+                if (self.timeLeft === 0) {
+                    self._state = self._STATE_FINISHED;
+                } else {
+                    self._$timeout(tick, interval);
+                }
+            }
+            self._$timeout(tick, interval);
+        }
+    }]);
+
+    return GameController;
+}();
+
+module.exports = ['$timeout', 'wordService', 'gameEngineService', GameController];
 
 /***/ }),
 /* 12 */
@@ -33798,6 +33901,16 @@ var gameEngineService = function () {
             var input = this._normalize(game.userInput);
             return game.word.original === input;
         }
+
+        /**
+         * Figure out whether the user has made a move that requires 
+         * reducing the score for this word (i.e., if they have deleted or changed
+         * characters that were already entered)
+         * 
+         * Reduces the score by 1 per backward move. If they have changed only a single
+         * character, but it is 3 characters back in the word, then we subtract 3
+         */
+
     }, {
         key: "_scoreReductionAmount",
         value: function _scoreReductionAmount(previousInput, currentInput) {
@@ -33809,6 +33922,7 @@ var gameEngineService = function () {
             } else {
                 var i = 0;
                 var earliestDivergence = previousInput.length;
+                // finds the first character that's different between the two strings
                 while (i < previousInput.length && earliestDivergence === previousInput.length) {
                     if (i > currentInput.length || previousInput[i] !== currentInput[i]) {
                         earliestDivergence = i;
@@ -33852,14 +33966,14 @@ var wordService = function () {
     function wordService(apiService) {
         _classCallCheck(this, wordService);
 
-        this.apiService = apiService;
+        this._apiService = apiService;
     }
 
     _createClass(wordService, [{
         key: 'get',
         value: function get(callback) {
             var self = this;
-            var words = this.apiService.getWords(function processWordList(words) {
+            var words = this._apiService.getWords(function processWordList(words) {
                 var random = Math.floor(Math.random() * words.length);
                 var word = words[random];
                 var wordDetails = {
@@ -33909,60 +34023,79 @@ module.exports = ['apiService', wordService];
 "use strict";
 
 
+var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
+
+function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
+
+var ScoresController = function () {
+    function ScoresController(gameEngineService, apiService) {
+        _classCallCheck(this, ScoresController);
+
+        this._gameEngineService = gameEngineService;
+        this._apiService = apiService;
+        this.currentGame = gameEngineService.game;
+
+        this.userName = "";
+        this.scoreEntered = false;
+        this.scoresLoaded = false;
+        this.position = true;
+        this.list = [];
+        this._loadHighScores();
+    }
+
+    _createClass(ScoresController, [{
+        key: 'submitScore',
+        value: function submitScore() {
+            var _this = this;
+
+            // we should really be validating the inputted name here, to make sure
+            // it's not empty, and not ridiculously long (we aren't truncating them)
+            var scoreId = this._apiService.addScore(this.userName, this.currentGame.score);
+            this.scoreEntered = true;
+            this._loadHighScores(function (scoreList) {
+                _this.position = _this._getPosition(scoreId, scoreList);
+            });
+        }
+    }, {
+        key: 'entered',
+        value: function entered() {
+            return this.scoreEntered;
+        }
+    }, {
+        key: 'notEntered',
+        value: function notEntered() {
+            return !this.entered();
+        }
+    }, {
+        key: '_loadHighScores',
+        value: function _loadHighScores(callback) {
+            var self = this;
+            self._apiService.getScores(function retrievedHighScores(scores) {
+                self.scoresLoaded = true;
+                self.list = scores;
+
+                if (typeof callback !== 'undefined') {
+                    callback(scores);
+                }
+            });
+        }
+    }, {
+        key: '_getPosition',
+        value: function _getPosition(scoreId, scoreList) {
+            var position = null;
+            scoreList.forEach(function (item, idx) {
+                if (item.id === scoreId) {
+                    position = idx + 1;
+                }
+            });
+            return position;
+        }
+    }]);
+
+    return ScoresController;
+}();
+
 module.exports = ['gameEngineService', 'apiService', ScoresController];
-
-function ScoresController(gameEngineService, apiService) {
-    this._gameEngineService = gameEngineService;
-    this._apiService = apiService;
-    this.currentGame = gameEngineService.game;
-
-    this.userName = "";
-    this.scoreEntered = false;
-    this.scoresLoaded = false;
-    this.position = true;
-    this.list = [];
-    this.loadHighScores();
-}
-
-ScoresController.prototype.loadHighScores = function (callback) {
-    var self = this;
-    self._apiService.getScores(function retrievedHighScores(scores) {
-        self.scoresLoaded = true;
-        self.list = scores;
-
-        if (typeof callback !== 'undefined') {
-            callback(scores);
-        }
-    });
-};
-
-ScoresController.prototype.submitScore = function () {
-    var _this = this;
-
-    var scoreId = this._apiService.addScore(this.userName, this.currentGame.score);
-    this.scoreEntered = true;
-    this.loadHighScores(function (scoreList) {
-        _this.position = _this._getPosition(scoreId, scoreList);
-    });
-};
-
-ScoresController.prototype.entered = function () {
-    return this.scoreEntered;
-};
-
-ScoresController.prototype.notEntered = function () {
-    return !this.entered();
-};
-
-ScoresController.prototype._getPosition = function (scoreId, scoreList) {
-    var position = null;
-    scoreList.forEach(function (item, idx) {
-        if (item.id === scoreId) {
-            position = idx + 1;
-        }
-    });
-    return position;
-};
 
 /***/ }),
 /* 15 */

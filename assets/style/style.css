@@ -2,33 +2,32 @@
  * Bootstrap overrides
  */
 body {
-    background-color: #f8f8f8;
+    background-color: #de4949;
 }
 h1, h2, h3, h4, p, div, body {
-    color: #444;
+    color: #f9f9f9;
     font-family: arial, sans-serif;
 }
 h1, h2, h3 {
     text-align: center;
 }
-h4 {
-    color: #5e50a7;
-    font-weight: bold;
-}
 .btn-primary {
-    background-color: #d23939;
-    border-color: #d23939;
+    background-color: #389076;
+    border-color: #f9f9f9;
 }
 .btn-primary:hover {
-    background-color: #ec2d2d;
-    border-color: #ec2d2d;
+    background-color: #389076;
+    border-color: #f9f9f9;
     text-decoration: underline;
 }
 .row {
     margin-bottom: 20px;
 }
-table {
+.table {
+    border-radius: 4px;
+    overflow: hidden;
     background: #fff;
+    color: #444;
 }
 
 /**
@@ -47,7 +46,6 @@ table {
     font-size: 24px;
 }
 .title__separator {
-    border-color: #777;
     width: 150px;
     margin-left: auto;
     margin-right: auto;

@@ -33798,6 +33798,11 @@ var GameController = function () {
             });
         }
     }, {
+        key: 'skipWord',
+        value: function skipWord() {
+            this._updateGame();
+        }
+    }, {
         key: 'stateNotStarted',
         value: function stateNotStarted() {
             return this._state === this._STATE_NOT_STARTED;

@@ -16,6 +16,7 @@
     "babel-loader": "^6.4.1",
     "babel-preset-env": "^1.2.2",
     "firebase": "^3.7.3",
-    "webpack": "^2.3.1"
+    "webpack": "^2.3.1",
+    "webpack-dev-server": "^2.4.2"
   }
 }

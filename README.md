@@ -8,6 +8,8 @@
 
 `npm run serve`
 
+The game will be accessible at http://localhost:8080
+
 ## Building for deployment
 
 `npm run build`

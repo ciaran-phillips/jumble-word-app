@@ -39,7 +39,7 @@
         -->
 
         <div class="container" ng-if="game.statePlaying()">
-            <div class="row-fluid">
+            <div class="row">
                 <div class="col-sm-4 info-panel">
                     <h4>Current Score</h4>
                     
@@ -69,7 +69,7 @@
                 </div>
             </div>
                 
-            <div class="row-fluid">
+            <div class="row">
                 <div class="col-sm-12">
                     <div class="form-group">
                         <input ng-change="game.evaluate()" ng-model="game.currentGame.userInput" type="text" 
@@ -85,7 +85,7 @@
 
         <div ng-if="game.stateFinished()">
             <div class="container scores-page" ng-controller="ScoresController as scores">
-                <div class="row-fluid">
+                <div class="row">
                     <div class="info-panel col-sm-12">
                         <h4>Final Score:</h4>
                         <div class="info-panel__detail">
@@ -94,7 +94,7 @@
                     </div>
 
                 </div>
-                <div class="row-fluid name-form">
+                <div class="row name-form">
                     <div class="col-sm-6 col-sm-offset-3">
                         <div ng-if="scores.notEntered()">
                             <p class="leader">
@@ -110,7 +110,7 @@
                     </div>
                 </div>
 
-                <div class="row-fluid">
+                <div class="row">
                     <div class="col-sm-12">
                         <div ng-if="scores.entered()">
                             <p class="congrats-message" ng-if="scores.entered() && scores.position">

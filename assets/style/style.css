@@ -100,3 +100,9 @@ h1, h2, h3 {
     background: none;
     border: 0;
 }
+.congrats-message {
+    font-size: 21px;
+    margin-bottom: 40px;
+    background-color: #e26565;
+    padding: 20px;
+}

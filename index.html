@@ -96,9 +96,13 @@
                         {{game.currentGame.word.jumbled}}
                     </span>
 
-                    <div class="word-score">
-                        Potential word score: <span class="word-score__val">{{game.currentGame.word.score}}</span>
-                    </div>
+                    <p class="poti">
+                        Potential word score: {{game.currentGame.word.score}}
+                        <br>
+                        <button class="skip-link" type="button" ng-click="game.skipWord()">
+                            (skip this word)
+                        </button>
+                    </p>
                 </div>
                 <div class="col-sm-4 info-panel">
                     <h4>Time left</h4>
@@ -109,7 +113,11 @@
 
                 </div>
             </div>
-                
+            
+            <div class="row">
+                <div class="col-sm-12">
+                </div>
+            </div>
             <div class="row">
                 <div class="col-sm-12">
                     <div class="form-group">

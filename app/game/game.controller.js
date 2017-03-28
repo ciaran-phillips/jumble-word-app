@@ -32,6 +32,10 @@ class GameController {
         });
     }
 
+    skipWord() {
+        this._updateGame();
+    }
+
     stateNotStarted() {
         return this._state === this._STATE_NOT_STARTED;
     }

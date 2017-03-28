@@ -56,7 +56,7 @@ h1, h2, h3 {
     margin-right: auto;
     display: block;
     font-size: 24px;
-    margin-top: 100px;
+    margin-top: 40px;
 }
 
 .game-input {
@@ -66,7 +66,6 @@ h1, h2, h3 {
     font-size: 24px;
     height: 48px;
     letter-spacing: .1em;
-    margin-top: 2em;
 }
 
 .info-panel {
@@ -94,4 +93,10 @@ h1, h2, h3 {
     border-top: 5px solid #389076;
     font-weight: bold;
     padding: .5em 1em;
+}
+.skip-link {
+    color: #f9f9f9;
+    text-decoration: underline;
+    background: none;
+    border: 0;
 }
